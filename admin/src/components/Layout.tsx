@@ -5,9 +5,16 @@ const LINKS = [
   { to: "/", label: "Dashboard", end: true },
   { to: "/products", label: "Products" },
   { to: "/orders", label: "Orders" },
+  { to: "/customers", label: "Customers" },
+  { to: "/gold-rates", label: "Gold Rates" },
+  { to: "/expenses", label: "Expenses" },
+  { to: "/payments", label: "Payments" },
+  { to: "/repairs", label: "Repairs" },
   { to: "/appointments", label: "Appointments" },
   { to: "/requests", label: "Custom Requests" },
+  { to: "/staff", label: "Staff" },
   { to: "/reports", label: "Reports" },
+  { to: "/settings", label: "Settings" },
 ];
 
 export default function Layout() {
@@ -25,7 +32,7 @@ export default function Layout() {
             <p className="text-xs text-stone-500">{shopName || "…"}</p>
           </div>
         </div>
-        <nav className="mt-2 flex-1 space-y-1 px-3">
+        <nav className="mt-2 flex-1 space-y-0.5 overflow-y-auto px-3 pb-4">
           {LINKS.map((l) => (
             <NavLink
               key={l.to}

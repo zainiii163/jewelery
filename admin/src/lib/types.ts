@@ -107,3 +107,52 @@ export interface WebsiteCustomRequest {
   status: string;
   created_at: string;
 }
+
+export interface Customer {
+  id: number;
+  name: string;
+  father_name: string | null;
+  cnic: string | null;
+  mobile: string | null;
+  whatsapp: string | null;
+  email: string | null;
+  address: string | null;
+  city: string | null;
+  notes: string | null;
+  total_amount: number;
+  paid: number;
+  remaining: number;
+  sales_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CustomerSale {
+  id: number;
+  invoice_no: string;
+  date: string;
+  items_summary: string;
+  total: number;
+  paid: number;
+  remaining: number;
+  status: string;
+}
+
+export interface CustomerPayment {
+  id: number;
+  date: string;
+  amount: number;
+  method: string;
+  reference: string | null;
+  notes: string | null;
+}
+
+export interface CustomerLedgerEntry {
+  id: number;
+  date: string;
+  type: "sale" | "payment" | "adjustment";
+  description: string;
+  debit: number;
+  credit: number;
+  balance: number;
+}

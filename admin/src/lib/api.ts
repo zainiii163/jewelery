@@ -1,4 +1,8 @@
 import type {
+  Customer,
+  CustomerLedgerEntry,
+  CustomerPayment,
+  CustomerSale,
   OnlineOrder,
   Paginated,
   Product,
@@ -105,6 +109,33 @@ export const updateRequest = (id: number, patch: { status?: string }) =>
     method: "PATCH",
     body: JSON.stringify(patch),
   });
+
+// ---- Customers ----
+export const listCustomers = (params: Record<string, string | number> = {}) => {
+  const q = new URLSearchParams();
+  for (const [k, v] of Object.entries(params)) {
+    if (v !== "" && v !== undefined && v !== null) q.set(k, String(v));
+  }
+  return request<{ data: Customer[]; total: number }>(`/api/shop/customers?${q.toString()}`);
+};
+
+export const getCustomer = (id: number) =>
+  request<Customer>(`/api/shop/customers/${id}`);
+
+export const upsertCustomer = (payload: Record<string, unknown>) =>
+  request<{ ok: boolean; customer: Customer }>("/api/shop/customers", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const getCustomerSales = (id: number) =>
+  request<CustomerSale[]>(`/api/shop/customers/${id}/sales`);
+
+export const getCustomerPayments = (id: number) =>
+  request<CustomerPayment[]>(`/api/shop/customers/${id}/payments`);
+
+export const getCustomerLedger = (id: number) =>
+  request<CustomerLedgerEntry[]>(`/api/shop/customers/${id}/ledger`);
 
 // ---- Reports & analytics ----
 export interface SummaryReport {
