@@ -36,16 +36,15 @@ jobs:
           cp .env.example .env
           php artisan key:generate
           touch database/database.sqlite
-          echo "DB_DATABASE=$(pwd)/database/database.sqlite" >> .env
 
       - name: Run migrations
         run: php artisan migrate --force
 
-      - name: Cache config
+      - name: Cache config (prod-like)
         run: php artisan config:cache
 
       - name: Run tests
-        run: php artisan test || php test --testsuite=Unit
+        run: php artisan config:clear && php artisan test
 
   # ---- Next.js website ----
   website:
