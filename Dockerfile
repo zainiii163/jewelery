@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev zip unzip git curl libpng-dev libjpeg-dev libfreetype6-dev \
     libonig-dev libxml2-dev libsqlite3-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_sqlite sqlite3 mbstring exif pcntl bcmath gd zip \
+    && docker-php-ext-install pdo_sqlite mbstring bcmath gd zip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
