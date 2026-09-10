@@ -21,4 +21,4 @@ RUN mkdir -p storage bootstrap/cache \
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "php artisan key:generate --force 2>/dev/null; php artisan migrate --force; php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]
+CMD ["sh", "-c", "php artisan key:generate --force 2>/dev/null; php artisan migrate --force; php artisan serve --host=0.0.0.0 --port=8000"]
