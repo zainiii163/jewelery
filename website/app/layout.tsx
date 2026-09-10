@@ -5,6 +5,7 @@ import { CartProvider } from "@/context/CartContext";
 import { LangProvider } from "@/context/LangContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const geist = Inter({ variable: "--font-geist-sans", subsets: ["latin"] });
 
@@ -34,6 +35,7 @@ export default function RootLayout({
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
+            <WhatsAppButton />
           </CartProvider>
         </LangProvider>
       </body>
