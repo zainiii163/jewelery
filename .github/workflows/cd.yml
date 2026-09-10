@@ -1,0 +1,90 @@
+name: CD
+
+on:
+  push:
+    tags: ["v*"]
+
+env:
+  REGISTRY: ghcr.io
+  IMG_API: ${{ github.repository }}/api
+  IMG_WEB: ${{ github.repository }}/web
+
+jobs:
+  docker:
+    name: Build & push Docker images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set version tag
+        id: meta
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build & push API image
+        uses: docker/build-push-action@v6
+        with:
+          context: server
+          file: server/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMG_API }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMG_API }}:${{ steps.meta.outputs.VERSION }}
+
+      - name: Build & push Website image
+        uses: docker/build-push-action@v6
+        with:
+          context: website
+          file: website/Dockerfile
+          push: true
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+            NEXT_PUBLIC_SHOP_CODE=${{ secrets.NEXT_PUBLIC_SHOP_CODE }}
+            NEXT_PUBLIC_SITE_NAME=${{ secrets.NEXT_PUBLIC_SITE_NAME }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMG_WEB }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMG_WEB }}:${{ steps.meta.outputs.VERSION }}
+
+  deploy:
+    name: Deploy to server
+    runs-on: ubuntu-latest
+    needs: docker
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy compose + proxy config to server
+        uses: appleboy/scp-action@v0.1.8
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          source: "docker-compose.yml,nginx/nginx.conf,nginx/conf.d/default.conf"
+          target: /opt/jewellery
+
+      - name: Pull & restart containers
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          script: |
+            cd /opt/jewellery
+            export DOMAIN=${{ secrets.DOMAIN }}
+            export SHOP_CODE=${{ secrets.SHOP_CODE }}
+            export SITE_NAME=${{ secrets.SITE_NAME }}
+            sed -i 's/\${DOMAIN}/'"$DOMAIN"'/g' nginx/conf.d/default.conf
+            docker compose down || true
+            docker compose pull
+            docker compose up -d
+            docker image prune -f

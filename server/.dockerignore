@@ -1,0 +1,14 @@
+vendor
+node_modules
+.git
+.env
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+storage/**/*.sqlite
+tests
+coverage
+.dockerignore
+Dockerfile
+Dockerfile.dev

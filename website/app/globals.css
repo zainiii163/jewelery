@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #1c1917;
+  --gold: #9a6b1f;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+[dir="rtl"] body {
+  font-family: "Segoe UI", "Noto Naskh Arabic", Tahoma, Arial, sans-serif;
+}

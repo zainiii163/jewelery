@@ -1,0 +1,30 @@
+# --- Deployment / infra ---
+.env
+*.local
+node_modules/
+.next/
+dist/
+coverage/
+vendor/
+.DS_Store
+
+# --- Dart / Flutter ---
+.jdeps/
+.dart_tool/
+.flutter-plugins*
+.gradle/
+build/
+*.iml
+
+# --- Logs ---
+*.log
+npm-debug.log*
+
+# --- IDE ---
+.idea/
+.vscode/
+*.code-workspace
+
+# --- OS ---
+Thumbs.db
+Desktop.ini

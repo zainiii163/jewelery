@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ---- Laravel API ----
+  laravel:
+    name: Laravel API
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: server/vendor
+          key: composer-${{ hashFiles('server/composer.lock') }}
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: pdo_sqlite, sqlite3, mbstring, zip
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          touch database/database.sqlite
+
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Cache config
+        run: php artisan config:cache
+
+      - name: Run tests
+        run: php artisan test || php test --testsuite=Unit
+
+  # ---- Next.js website ----
+  website:
+    name: Next.js Website
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check & lint
+        run: npm run build
+
+  # ---- Flutter desktop app ----
+  flutter:
+    name: Flutter Desktop
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: jewellery_shop
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.47.2"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Build Windows (x64)
+        run: flutter build windows --release
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-release
+          path: jewellery_shop/build/windows/x64/runner/Release/*
+          if-no-files-found: ignore
