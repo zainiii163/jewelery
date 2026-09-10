@@ -21,9 +21,4 @@ RUN mkdir -p storage bootstrap/cache \
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "\
-  touch database/database.sqlite && \
-  php artisan key:generate --force && \
-  php artisan config:cache 2>/dev/null; \
-  php artisan migrate --force; \
-  exec php -S 0.0.0.0:8000 -t public"]
+CMD ["sh", "-c", "touch database/database.sqlite && php artisan key:generate --force && php artisan migrate --force && exec php -S 0.0.0.0:8000 router.php"]
