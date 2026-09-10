@@ -30,12 +30,11 @@ export default function Header() {
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-yellow-600 to-amber-400 text-lg font-bold text-white">
-              T
-            </span>
-            <span className="text-lg font-bold tracking-tight text-stone-900">
-              {siteName}
-            </span>
+            <img
+              src="/logo.png"
+              alt={siteName}
+              className="h-10 w-auto"
+            />
           </Link>
 
           {/* Desktop nav */}

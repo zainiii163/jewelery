@@ -19,9 +19,7 @@ export default function Layout() {
     <div className="flex min-h-screen">
       <aside className="flex w-60 flex-col border-e border-stone-200 bg-stone-950 text-stone-300">
         <div className="flex items-center gap-2 px-5 py-5">
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-yellow-600 to-amber-400 font-bold text-white">
-            T
-          </span>
+          <img src="/logo.png" alt="Tayyab Jewellers" className="h-10 w-auto" />
           <div>
             <p className="text-sm font-bold text-white">Admin Panel</p>
             <p className="text-xs text-stone-500">{shopName || "…"}</p>

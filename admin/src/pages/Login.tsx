@@ -34,11 +34,9 @@ export default function Login() {
         onSubmit={submit}
         className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl"
       >
-        <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-gradient-to-br from-yellow-600 to-amber-400 text-xl font-bold text-white">
-          T
-        </div>
+        <img src="/logo.png" alt="Tayyab Jewellers" className="mx-auto h-16 w-auto" />
         <h1 className="mt-4 text-center text-xl font-bold text-stone-900">
-          Tayyab Jewellers Admin
+          Admin Panel
         </h1>
         <p className="mt-1 text-center text-sm text-stone-500">
           Sign in with website credentials
