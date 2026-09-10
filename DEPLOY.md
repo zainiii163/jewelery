@@ -33,6 +33,16 @@ Nginx (:80/:443) ──► /api/*       ──► api  (php-fpm, /var/www)
 
 ## One-time setup
 
+Quick path (scripted, prompts for domain/shop/site):
+
+```bash
+sudo git clone https://github.com/zainiii163/jewelery.git /opt/jewellery
+sudo bash /opt/jewellery/deploy/server-setup.sh   # docker + build + up
+sudo bash /opt/jewellery/deploy/server-tls.sh      # Let's Encrypt + renewal cron
+```
+
+Manual path:
+
 ```bash
 # 1. Clone or upload the repo
 git clone <repo> /opt/jewellery && cd /opt/jewellery
