@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Avoid the default `route('login')` lookup (no web login route exists
         // in this API app); API guests are answered with JSON 401 below.
         $middleware->redirectGuestsTo(fn (Request $request) => '/');
+        $middleware->api(prepend: [
+            \Illuminate\Http\Middleware\HandleCors::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (AuthenticationException $e, Request $request) {
