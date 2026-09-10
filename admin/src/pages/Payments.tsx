@@ -1,5 +1,25 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { API, request } from "../lib/api";
+import { downloadCsv } from "../lib/api";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
+function getToken(): string {
+  return localStorage.getItem("jw_admin_token") || "";
+}
+
+async function apiRequest<T>(path: string, opts: RequestInit = {}): Promise<T> {
+  const res = await fetch(`${API_URL}${path}`, {
+    ...opts,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${getToken()}`,
+      ...opts.headers,
+    },
+  });
+  if (!res.ok) throw new Error(`Request failed (${res.status})`);
+  return res.json() as Promise<T>;
+}
 
 /* ── types ── */
 interface Payment {

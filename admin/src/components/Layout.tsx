@@ -1,8 +1,10 @@
-import { NavLink, Outlet, Navigate, useLocation } from "react-router-dom";
+import { NavLink, Outlet, Navigate } from "react-router-dom";
 import { useAuth } from "../lib/AuthContext";
 import { useState } from "react";
 
-const SECTIONS = [
+type NavLink = { to: string; label: string; icon: string; end?: boolean };
+
+const SECTIONS: { label: string; links: NavLink[] }[] = [
   {
     label: "Overview",
     links: [
@@ -41,7 +43,6 @@ const SECTIONS = [
 export default function Layout() {
   const { token, shopName, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
-  const location = useLocation();
 
   if (!token) return <Navigate to="/login" replace />;
 
