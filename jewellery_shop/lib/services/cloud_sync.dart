@@ -176,6 +176,21 @@ class CloudSyncService {
     }
   }
 
+  /// Pushes POS business records (sales, purchases, expenses, repairs,
+  /// exchanges, ledger, customers, gold rates, inventory moves) to the server.
+  Future<void> pushBusinessData(Map<String, dynamic> payload) async {
+    final res = await http
+        .post(
+          _uri('/api/shop/business/sync'),
+          headers: {..._headers, 'Content-Type': 'application/json'},
+          body: jsonEncode(payload),
+        )
+        .timeout(const Duration(seconds: 90));
+    if (res.statusCode != 200) {
+      throw Exception(_error(res, 'Business sync failed'));
+    }
+  }
+
   List<String> _splitPaths(String raw) => raw
       .split(RegExp(r'[,\n;]'))
       .map((s) => s.trim())

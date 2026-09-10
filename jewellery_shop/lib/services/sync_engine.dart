@@ -117,6 +117,14 @@ class SyncEngine extends ChangeNotifier {
       }
     }
 
+    // ---- Push POS business data (watermark-based delta) ----
+    final bizCounts = <String, int>{};
+    try {
+      bizCounts.addAll(await _pushBusinessData(sync));
+    } catch (e) {
+      problems.add('business: $e');
+    }
+
     // ---- Pull website activity into the offline cache ----
     final pullErrors = <String>[];
     final sp = await SharedPreferences.getInstance();
@@ -151,6 +159,8 @@ class SyncEngine extends ChangeNotifier {
 
     final parts = <String>[
       if (pushed.isNotEmpty) 'Pushed ${pushed.length} product(s)',
+      if (bizCounts.isNotEmpty)
+        'POS: ${bizCounts.entries.map((e) => '${e.key}=${e.value}').join(', ')}',
       if (_lastError == null) 'Website activity updated',
     ];
     return parts.join(' · ');
@@ -202,6 +212,156 @@ class SyncEngine extends ChangeNotifier {
       .map((s) => s.trim())
       .where((s) => s.isNotEmpty)
       .toList();
+
+  // ---- POS business data watermark push ----
+
+  static const _kBizWm = 'sync_biz_wm_';
+  static const _bizSyncOrder = [
+    'customers', 'gold_rates', 'sales', 'purchases', 'payments',
+    'ledger_entries', 'expenses', 'repairs', 'exchanges', 'inventory_moves',
+  ];
+
+  /// Maps local camelCase columns to the server's snake_case payload keys.
+  static const Map<String, Map<String, String>> _bizMaps = {
+    'customers': {
+      'customerId': 'customer_id', 'name': 'name', 'fatherName': 'father_name',
+      'cnic': 'cnic', 'mobile': 'mobile', 'whatsapp': 'whatsapp',
+      'address': 'address', 'city': 'city', 'email': 'email', 'notes': 'notes',
+      'totalAmount': 'total_amount', 'paidAmount': 'paid_amount',
+      'registeredDate': 'registered_date',
+    },
+    'gold_rates': {
+      'date': 'rate_date', 'rate24k': 'rate24k', 'rate22k': 'rate22k',
+      'rate21k': 'rate21k', 'rate20k': 'rate20k', 'rate18k': 'rate18k',
+      'silverRate': 'silver_rate',
+    },
+    'sales': {
+      'invoiceId': 'invoice_id', 'customerId': 'customer_id',
+      'customerName': 'customer_name', 'saleDate': 'sale_date',
+      'subtotal': 'subtotal', 'totalDiscount': 'total_discount', 'tax': 'tax',
+      'total': 'total', 'paid': 'paid', 'remaining': 'remaining',
+      'paymentMethod': 'payment_method', 'notes': 'notes',
+    },
+    'sale_items': {
+      'productId': 'product_id', 'productName': 'product_name',
+      'grossWeight': 'gross_weight', 'netWeight': 'net_weight',
+      'purity': 'purity', 'karat': 'karat', 'goldRate': 'gold_rate',
+      'metalValue': 'metal_value', 'makingCharges': 'making_charges',
+      'stoneCharges': 'stone_charges', 'discount': 'discount',
+      'lineTotal': 'line_total', 'quantity': 'quantity',
+    },
+    'purchases': {
+      'purchaseId': 'purchase_id', 'supplierId': 'supplier_id',
+      'supplierName': 'supplier_name', 'productId': 'product_id',
+      'productName': 'product_name', 'purchaseDate': 'purchase_date',
+      'grossWeight': 'gross_weight', 'netWeight': 'net_weight',
+      'purity': 'purity', 'karat': 'karat', 'rate': 'rate',
+      'makingCharges': 'making_charges', 'totalCost': 'total_cost',
+      'paid': 'paid', 'remaining': 'remaining',
+      'paymentMethod': 'payment_method', 'notes': 'notes',
+    },
+    'payments': {
+      'paymentId': 'payment_id', 'customerId': 'customer_id',
+      'customerName': 'customer_name', 'date': 'payment_date',
+      'amount': 'amount', 'method': 'method', 'type': 'type',
+      'reference': 'reference', 'notes': 'notes',
+    },
+    'ledger_entries': {
+      'customerId': 'customer_id', 'customerName': 'customer_name',
+      'date': 'entry_date', 'description': 'description', 'debit': 'debit',
+      'credit': 'credit', 'balance': 'balance', 'source': 'source',
+      'referenceId': 'reference_id',
+    },
+    'expenses': {
+      'expenseId': 'expense_id', 'date': 'expense_date', 'category': 'category',
+      'description': 'description', 'amount': 'amount',
+      'paymentMethod': 'payment_method', 'notes': 'notes',
+    },
+    'repairs': {
+      'repairId': 'repair_id', 'customerId': 'customer_id',
+      'customerName': 'customer_name', 'productId': 'product_id',
+      'productName': 'product_name', 'problem': 'problem',
+      'receivedDate': 'received_date', 'expectedDate': 'expected_date',
+      'estimatedCharges': 'estimated_charges', 'finalCharges': 'final_charges',
+      'employee': 'employee', 'notes': 'notes', 'status': 'status',
+    },
+    'exchanges': {
+      'exchangeId': 'exchange_id', 'customerId': 'customer_id',
+      'customerName': 'customer_name', 'date': 'exchange_date',
+      'oldTotalValue': 'old_total_value', 'newTotalValue': 'new_total_value',
+      'makingCharges': 'making_charges', 'stoneCharges': 'stone_charges',
+      'discount': 'discount', 'netAmount': 'net_amount',
+      'cashReceived': 'cash_received', 'amountDue': 'amount_due',
+      'paymentMethod': 'payment_method', 'notes': 'notes',
+    },
+    'exchange_items': {
+      'direction': 'direction', 'metalType': 'metal_type',
+      'productId': 'product_id', 'productName': 'product_name',
+      'grossWeight': 'gross_weight', 'netWeight': 'net_weight',
+      'purity': 'purity', 'karat': 'karat', 'rate': 'rate',
+      'metalValue': 'metal_value', 'makingCharges': 'making_charges',
+      'stoneCharges': 'stone_charges', 'lineTotal': 'line_total',
+    },
+    'inventory_moves': {
+      'productId': 'product_id', 'productName': 'product_name',
+      'date': 'move_date', 'type': 'type', 'metalType': 'metal_type',
+      'weight': 'weight', 'quantity': 'quantity', 'notes': 'notes',
+    },
+  };
+
+  Map<String, dynamic> _bizRow(Map<String, dynamic> src, Map<String, String> map) {
+    final out = <String, dynamic>{};
+    for (final e in map.entries) {
+      final v = src[e.key];
+      if (v != null) out[e.value] = v;
+    }
+    out['ext_id'] = src['id'];
+    return out;
+  }
+
+  /// Pushes rows with local id > per-table watermark to the server. Watermarks
+  /// advance only after a successful push, so partial failures replay cleanly.
+  /// Returns a map of table -> rows pushed.
+  Future<Map<String, int>> _pushBusinessData(CloudSyncService sync) async {
+    final sp = await SharedPreferences.getInstance();
+    final db = await DatabaseHelper.instance.database;
+    final payload = <String, dynamic>{};
+    final advanced = <String, int>{};
+
+    for (final table in _bizSyncOrder) {
+      final wm = sp.getInt('$_kBizWm$table') ?? 0;
+      final map = _bizMaps[table]!;
+      final rows = await db.query(table,
+          where: 'id > ?',
+          whereArgs: [wm],
+          orderBy: 'id ASC',
+          limit: 500);
+      if (rows.isEmpty) continue;
+      final mapped = rows.map((r) => _bizRow(r, map)).toList();
+      if (table == 'sales' || table == 'exchanges') {
+        final itemTable = table == 'sales' ? 'sale_items' : 'exchange_items';
+        final fk = table == 'sales' ? 'saleId' : 'exchangeId';
+        final itemMap = _bizMaps[itemTable]!;
+        for (var i = 0; i < mapped.length; i++) {
+          final items = await db.query(itemTable,
+              where: '$fk = ?', whereArgs: [mapped[i]['ext_id']], orderBy: 'id ASC');
+          mapped[i]['items'] = items.map((r) => _bizRow(r, itemMap)).toList();
+        }
+      }
+      payload[table] = mapped;
+      advanced[table] = mapped.fold<int>(0, (m, r) {
+        final id = r['ext_id'] as int;
+        return id > m ? id : m;
+      });
+    }
+
+    if (payload.isEmpty) return {};
+    await sync.pushBusinessData(payload);
+    for (final e in advanced.entries) {
+      await sp.setInt('$_kBizWm${e.key}', e.value);
+    }
+    return advanced.map((k, v) => MapEntry(k, payload[k].length));
+  }
 
   // ---- Offline caches for the Website screen ----
 
