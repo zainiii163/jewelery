@@ -9,6 +9,7 @@ use App\Models\OnlineOrderItem;
 use App\Models\Product;
 use App\Models\Shop;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 /**
  * Public intake endpoints used by the website checkout/contact forms.
@@ -24,28 +25,27 @@ class CheckoutController extends Controller
 
     private function nextOrderNumber(): string
     {
-        $last = OnlineOrder::latest('id')->value('order_number');
-
-        $number = $last ? ((int) substr($last, 4)) + 1 : 1001;
-
-        return 'ORD-' . $number;
+        // Use random suffix to prevent order enumeration
+        $random = strtoupper(Str::random(6));
+        $timestamp = now()->format('ymd');
+        return "ORD-{$timestamp}-{$random}";
     }
 
     /** POST /api/orders — create an order from the website. */
     public function createOrder(Request $request)
     {
         $validated = $request->validate([
-            'shop_code' => ['sometimes', 'string'],
+            'shop_code' => ['sometimes', 'string', 'max:50'],
             'customer_name' => ['required', 'string', 'max:255'],
             'customer_phone' => ['nullable', 'string', 'max:30'],
-            'customer_email' => ['nullable', 'email'],
-            'address' => ['nullable', 'string'],
-            'city' => ['nullable', 'string'],
-            'payment_method' => ['nullable', 'string'],
-            'notes' => ['nullable', 'string'],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.sku' => ['required', 'string'],
-            'items.*.qty' => ['required', 'integer', 'min:1'],
+            'customer_email' => ['nullable', 'email', 'max:255'],
+            'address' => ['nullable', 'string', 'max:500'],
+            'city' => ['nullable', 'string', 'max:100'],
+            'payment_method' => ['nullable', 'string', 'in:cod,bank_transfer,jazzcash,easypaisa,card'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+            'items' => ['required', 'array', 'min:1', 'max:50'],
+            'items.*.sku' => ['required', 'string', 'max:50'],
+            'items.*.qty' => ['required', 'integer', 'min:1', 'max:100'],
         ]);
 
         $shop = $this->resolveShop($request);
@@ -86,7 +86,7 @@ class CheckoutController extends Controller
             'address' => $request->input('address'),
             'city' => $request->input('city'),
             'payment_method' => $request->input('payment_method', 'cod'),
-            'payment_status' => $request->input('payment_method', 'cod') === 'cod' ? 'pending' : 'pending',
+            'payment_status' => 'pending',
             'status' => 'Pending',
             'subtotal' => $totals['subtotal'],
             'shipping' => $totals['shipping'],
@@ -109,13 +109,13 @@ class CheckoutController extends Controller
     public function createAppointment(Request $request)
     {
         $validated = $request->validate([
-            'shop_code' => ['sometimes', 'string'],
+            'shop_code' => ['sometimes', 'string', 'max:50'],
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:30'],
-            'date' => ['required', 'date'],
-            'time' => ['nullable', 'string'],
-            'purpose' => ['nullable', 'string'],
-            'notes' => ['nullable', 'string'],
+            'date' => ['required', 'date', 'after_or_equal:today'],
+            'time' => ['nullable', 'string', 'max:20'],
+            'purpose' => ['nullable', 'string', 'max:255'],
+            'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $shop = $this->resolveShop($request);
@@ -138,15 +138,15 @@ class CheckoutController extends Controller
     public function createCustomRequest(Request $request)
     {
         $validated = $request->validate([
-            'shop_code' => ['sometimes', 'string'],
+            'shop_code' => ['sometimes', 'string', 'max:50'],
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:30'],
             'jewellery_type' => ['nullable', 'string', 'max:255'],
             'metal' => ['nullable', 'in:gold,silver'],
-            'karat' => ['nullable', 'integer', 'max:24'],
-            'budget' => ['nullable', 'numeric', 'min:0'],
-            'description' => ['nullable', 'string'],
-            'image' => ['nullable', 'file', 'image', 'max:8192'],
+            'karat' => ['nullable', 'integer', 'min:0', 'max:24'],
+            'budget' => ['nullable', 'numeric', 'min:0', 'max:10000000'],
+            'description' => ['nullable', 'string', 'max:2000'],
+            'image' => ['nullable', 'file', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:8192'],
         ]);
 
         $shop = $this->resolveShop($request);

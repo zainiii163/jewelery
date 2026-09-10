@@ -56,28 +56,28 @@ class ShopSyncController extends Controller
     public function upsertProduct(Request $request)
     {
         $validated = $request->validate([
-            'sku' => ['required', 'string'],
+            'sku' => ['required', 'string', 'max:50'],
             'name' => ['required', 'string', 'max:255'],
-            'category' => ['nullable', 'string'],
-            'metal_type' => ['sometimes', 'in:gold,silver'],
-            'purity' => ['nullable', 'numeric'],
-            'karat' => ['nullable', 'integer'],
-            'gross_weight' => ['nullable', 'numeric'],
-            'net_weight' => ['nullable', 'numeric'],
-            'stone_weight' => ['nullable', 'numeric'],
-            'making_charges' => ['nullable', 'numeric'],
-            'stone_charges' => ['nullable', 'numeric'],
-            'sale_price' => ['nullable', 'numeric'],
-            'purchase_cost' => ['nullable', 'numeric'],
-            'status' => ['sometimes', 'string'],
+            'category' => ['nullable', 'string', 'max:255'],
+            'metal_type' => ['sometimes', 'in:gold,silver,other'],
+            'purity' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'karat' => ['nullable', 'integer', 'min:0', 'max:24'],
+            'gross_weight' => ['nullable', 'numeric', 'min:0', 'max:99999'],
+            'net_weight' => ['nullable', 'numeric', 'min:0', 'max:99999'],
+            'stone_weight' => ['nullable', 'numeric', 'min:0', 'max:99999'],
+            'making_charges' => ['nullable', 'numeric', 'min:0', 'max:9999999'],
+            'stone_charges' => ['nullable', 'numeric', 'min:0', 'max:9999999'],
+            'sale_price' => ['nullable', 'numeric', 'min:0', 'max:99999999'],
+            'purchase_cost' => ['nullable', 'numeric', 'min:0', 'max:99999999'],
+            'status' => ['sometimes', 'string', 'in:In Stock,Sold,Reserved,Returned,Exchanged,Repair,Lost'],
             'published' => ['sometimes', 'boolean'],
             'featured' => ['sometimes', 'boolean'],
             'new_arrival' => ['sometimes', 'boolean'],
             'best_seller' => ['sometimes', 'boolean'],
-            'stock_qty' => ['sometimes', 'integer'],
-            'description' => ['nullable', 'string'],
-            'seo_title' => ['nullable', 'string'],
-            'seo_description' => ['nullable', 'string'],
+            'stock_qty' => ['sometimes', 'integer', 'min:0', 'max:99999'],
+            'description' => ['nullable', 'string', 'max:5000'],
+            'seo_title' => ['nullable', 'string', 'max:255'],
+            'seo_description' => ['nullable', 'string', 'max:500'],
         ]);
 
         $shop = $request->user();
@@ -125,7 +125,7 @@ class ShopSyncController extends Controller
     public function addMedia(Request $request, string $sku)
     {
         $request->validate([
-            'file' => ['required', 'file'], // any image/video up to 25MB
+            'file' => ['required', 'file', 'mimes:jpeg,jpg,png,gif,webp,mp4,webm,mov', 'max:25600'],
             'kind' => ['sometimes', 'in:image,video'],
         ]);
 
@@ -175,8 +175,8 @@ class ShopSyncController extends Controller
     public function updateOrder(Request $request, int $id)
     {
         $validated = $request->validate([
-            'status' => ['sometimes', 'string'],
-            'payment_status' => ['sometimes', 'in:paid,pending,failed'],
+            'status' => ['sometimes', 'string', 'in:Pending,Confirmed,In Progress,Ready,Completed,Cancelled,Returned,Shipped,Delivered'],
+            'payment_status' => ['sometimes', 'string', 'in:paid,pending,failed'],
         ]);
 
         $order = OnlineOrder::where('shop_id', $request->user()->id)->findOrFail($id);
@@ -205,8 +205,8 @@ class ShopSyncController extends Controller
     public function updateAppointment(Request $request, int $id)
     {
         $validated = $request->validate([
-            'status' => ['sometimes', 'string'],
-            'notes' => ['sometimes', 'string'],
+            'status' => ['sometimes', 'string', 'in:Pending,Confirmed,Completed,Cancelled'],
+            'notes' => ['sometimes', 'string', 'max:1000'],
         ]);
 
         $record = Appointment::where('shop_id', $request->user()->id)->findOrFail($id);
@@ -228,7 +228,7 @@ class ShopSyncController extends Controller
     public function updateCustomRequest(Request $request, int $id)
     {
         $validated = $request->validate([
-            'status' => ['sometimes', 'string'],
+            'status' => ['sometimes', 'string', 'in:New,Reviewed,In Progress,Completed,Cancelled'],
         ]);
 
         $record = CustomRequest::where('shop_id', $request->user()->id)->findOrFail($id);

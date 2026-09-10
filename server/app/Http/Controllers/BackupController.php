@@ -30,7 +30,9 @@ class BackupController extends Controller
     /** POST /api/backup/push — multipart field `backup` = .db file. */
     public function push(Request $request)
     {
-        $request->validate(['backup' => ['required', 'file']]);
+        $request->validate([
+            'backup' => ['required', 'file', 'mimes:db,sqlite,sqlite3', 'max:102400'], // max 100MB
+        ]);
 
         /** @var \Illuminate\Http\UploadedFile $file */
         $file = $request->file('backup');

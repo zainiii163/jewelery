@@ -10,15 +10,30 @@ use App\Http\Controllers\PosReportsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\ShopSyncController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\RateLimiter;
+
+// Register rate limiters
+RateLimiter::for('login', function () {
+    return \Illuminate\Http\Middleware\RateLimiter::perMinute(5); // 5 attempts per minute
+});
+
+RateLimiter::for('checkout', function () {
+    return \Illuminate\Http\Middleware\RateLimiter::perMinute(20); // 20 orders per minute
+});
+
+RateLimiter::for('api-general', function () {
+    return \Illuminate\Http\Middleware\RateLimiter::perMinute(120); // 120 requests per minute
+});
 
 // NOTE: Laravel 12 registers this file with the automatic `api` prefix
 // (bootstrap/app.php -> withRouting(api: ...)), so no /api prefix here.
 
-// ---- Public (used by the shop app itself to link its server account) ----
-Route::post('/auth/login', [AuthController::class, 'login']);
+// ---- Public: Auth ----
+Route::post('/auth/login', [AuthController::class, 'login'])
+    ->middleware('throttle:login');
 
 // ---- Authenticated shop (the desktop app) ----
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:api-general'])->group(function () {
     Route::get('/ping', [BackupController::class, 'ping']);
     Route::post('/backup/push', [BackupController::class, 'push']);
     Route::get('/backup/latest', [BackupController::class, 'latest']);
@@ -73,7 +88,7 @@ Route::prefix('catalog')->group(function () {
     Route::get('/products/{sku}', [CatalogController::class, 'show']);
 });
 
-Route::prefix('checkout')->group(function () {
+Route::prefix('checkout')->middleware('throttle:checkout')->group(function () {
     Route::post('/orders', [CheckoutController::class, 'createOrder']);
     Route::post('/appointments', [CheckoutController::class, 'createAppointment']);
     Route::post('/custom-requests', [CheckoutController::class, 'createCustomRequest']);

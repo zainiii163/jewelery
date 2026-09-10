@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -17,19 +18,39 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validated = $request->validate([
-            'shop_code' => ['required', 'string'],
-            'password' => ['required', 'string'],
+            'shop_code' => ['required', 'string', 'max:50'],
+            'password' => ['required', 'string', 'max:255'],
         ]);
 
-        $shop = Shop::where('shop_code', strtoupper($validated['shop_code']))->first();
+        $shopCode = strtoupper(trim($validated['shop_code']));
+        $shop = Shop::where('shop_code', $shopCode)->first();
 
         if (! $shop || ! Hash::check($validated['password'], $shop->password)) {
+            // Log failed attempt
+            Log::warning('Failed login attempt', [
+                'shop_code' => $shopCode,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
             throw ValidationException::withMessages([
                 'shop_code' => ['The provided credentials are incorrect.'],
             ]);
         }
 
-        $token = $shop->createToken('desktop');
+        // Delete old tokens (max 3 active sessions)
+        $oldTokens = $shop->tokens()->orderByDesc('created_at')->skip(2)->get();
+        foreach ($oldTokens as $token) {
+            $token->delete();
+        }
+
+        $token = $shop->createToken('desktop', ['*']);
+
+        // Log successful login
+        Log::info('Successful login', [
+            'shop_code' => $shopCode,
+            'ip' => $request->ip(),
+        ]);
 
         return response()->json([
             'token' => $token->plainTextToken,
