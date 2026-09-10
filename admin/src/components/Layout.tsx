@@ -51,7 +51,7 @@ export default function Layout() {
       <aside className={`flex flex-col border-e border-stone-200 bg-white transition-all duration-300 ${collapsed ? "w-[68px]" : "w-64"}`}>
         {/* Logo */}
         <div className="flex h-16 items-center gap-3 border-b border-stone-100 px-4">
-          <img src="/logo.png" alt="TJ" className="h-9 w-auto shrink-0" />
+          <img src="/logo.svg" alt="TJ" className="h-9 w-auto shrink-0" />
           {!collapsed && (
             <div className="min-w-0">
               <p className="truncate text-sm font-bold text-stone-900">Admin Panel</p>

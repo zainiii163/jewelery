@@ -14,7 +14,7 @@ export default function Footer() {
         {/* Brand */}
         <div>
           <div className="flex items-center gap-2">
-            <img src="/logo.png" alt={siteName} className="h-10 w-auto" />
+            <img src="/logo.svg" alt={siteName} className="h-10 w-auto" />
           </div>
           <p className="mt-3 text-sm leading-relaxed text-stone-400">
             Hand-crafted 22K gold and silver jewellery for generations of

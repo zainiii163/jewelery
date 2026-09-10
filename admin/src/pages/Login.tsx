@@ -36,7 +36,7 @@ export default function Login() {
         className="relative w-full max-w-sm rounded-3xl border border-stone-200/10 bg-white/95 p-8 shadow-2xl backdrop-blur-xl"
       >
         <div className="flex flex-col items-center">
-          <img src="/logo.png" alt="Tayyab Jewellers" className="h-20 w-auto" />
+          <img src="/logo.svg" alt="Tayyab Jewellers" className="h-20 w-auto" />
           <h1 className="mt-4 text-xl font-black text-stone-900">Admin Panel</h1>
           <p className="mt-1 text-sm text-stone-500">Sign in to manage your shop</p>
         </div>
