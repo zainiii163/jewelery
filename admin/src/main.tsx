@@ -11,6 +11,7 @@ import ProductEdit from "./pages/ProductEdit";
 import Orders from "./pages/Orders";
 import Appointments from "./pages/Appointments";
 import Requests from "./pages/Requests";
+import PosReports from "./pages/PosReports";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -25,6 +26,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/orders" element={<Orders />} />
             <Route path="/appointments" element={<Appointments />} />
             <Route path="/requests" element={<Requests />} />
+            <Route path="/reports" element={<PosReports />} />
           </Route>
         </Routes>
       </AuthProvider>

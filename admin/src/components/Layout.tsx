@@ -7,6 +7,7 @@ const LINKS = [
   { to: "/orders", label: "Orders" },
   { to: "/appointments", label: "Appointments" },
   { to: "/requests", label: "Custom Requests" },
+  { to: "/reports", label: "Reports" },
 ];
 
 export default function Layout() {

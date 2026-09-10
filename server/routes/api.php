@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\BusinessSyncController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\PosReportsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\ShopSyncController;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +48,22 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // CSV exports
     Route::get('/shop/orders/export', [ExportController::class, 'orders']);
+
+    // POS business data ingestion (desktop -> cloud mirror)
+    Route::post('/shop/business/sync', [BusinessSyncController::class, 'sync']);
+
+    // POS business reports (accept ?format=json|csv|pdf, ?from=&to=)
+    Route::get('/shop/reports/pos/summary', [PosReportsController::class, 'summary']);
+    Route::get('/shop/reports/pos/sales', [PosReportsController::class, 'sales']);
+    Route::get('/shop/reports/pos/purchases', [PosReportsController::class, 'purchases']);
+    Route::get('/shop/reports/pos/expenses', [PosReportsController::class, 'expenses']);
+    Route::get('/shop/reports/pos/repairs', [PosReportsController::class, 'repairs']);
+    Route::get('/shop/reports/pos/exchanges', [PosReportsController::class, 'exchanges']);
+    Route::get('/shop/reports/pos/customers', [PosReportsController::class, 'customers']);
+    Route::get('/shop/reports/pos/ledger', [PosReportsController::class, 'ledger']);
+    Route::get('/shop/reports/pos/inventory', [PosReportsController::class, 'inventory']);
+    Route::get('/shop/reports/pos/gold-rates', [PosReportsController::class, 'goldRates']);
+    Route::get('/shop/reports/pos/profit-loss', [PosReportsController::class, 'profitLoss']);
 });
 
 // ---- Public customer-facing website ----

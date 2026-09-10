@@ -177,3 +177,88 @@ export function downloadCsv(path: string, filename: string) {
       setTimeout(() => URL.revokeObjectURL(url), 5000);
     });
 }
+
+// ---- POS business reports (desktop-synced data) ----
+export interface PosSummaryReport {
+  from: string;
+  to: string;
+  sales_total: number;
+  sales_count: number;
+  avg_sale: number;
+  purchases_total: number;
+  expenses_total: number;
+  payments_received: number;
+  repairs_pending: number;
+  repairs_charges: number;
+  exchanges_net: number;
+  receivables: number;
+  gold_weight: number;
+  silver_weight: number;
+  inventory_value: number;
+  low_stock_count: number;
+}
+
+export interface PosSalesPoint {
+  label: string;
+  orders: number;
+  revenue: number;
+}
+
+export interface PosSalesReport {
+  period: string;
+  from: string;
+  to: string;
+  series: PosSalesPoint[];
+  total_revenue: number;
+  total_orders: number;
+}
+
+export interface PosTableReport {
+  title: string;
+  from: string;
+  to: string;
+  headings: string[];
+  rows: string[][];
+  totals: Record<string, string>;
+}
+
+const posRange = (from: string, to: string, extra: Record<string, string> = {}) => {
+  const q = new URLSearchParams({ from, to, ...extra });
+  return q.toString();
+};
+
+export const getPosSummary = (from: string, to: string) =>
+  request<PosSummaryReport>(`/api/shop/reports/pos/summary?${posRange(from, to)}`);
+
+export const getPosSales = (period: string, from: string, to: string) =>
+  request<PosSalesReport>(`/api/shop/reports/pos/sales?${posRange(from, to, { period })}`);
+
+export const getPosTable = (report: string, from: string, to: string, extra: Record<string, string> = {}) =>
+  request<PosTableReport>(`/api/shop/reports/pos/${report}?${posRange(from, to, extra)}`);
+
+const exportFile = (path: string, filename: string, accept: string) => {
+  const token = getToken();
+  return fetch(`${API}${path}`, {
+    headers: { Accept: accept, ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error(`Export failed (${res.status})`);
+      return res.blob();
+    })
+    .then((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    });
+};
+
+export const downloadPosPdf = (report: string, from: string, to: string, extra: Record<string, string> = {}) =>
+  exportFile(`/api/shop/reports/pos/${report}?${posRange(from, to, { ...extra, format: "pdf" })}`, `${report}-${from}-${to}.pdf`, "application/pdf");
+
+export const downloadPosCsv = (report: string, from: string, to: string, extra: Record<string, string> = {}) =>
+  exportFile(`/api/shop/reports/pos/${report}?${posRange(from, to, { ...extra, format: "csv" })}`, `${report}-${from}-${to}.csv`, "text/csv");
