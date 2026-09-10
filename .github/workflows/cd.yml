@@ -69,7 +69,7 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
-          source: "docker-compose.yml,nginx/nginx.conf,nginx/conf.d/default.conf"
+          source: "docker-compose.yml,nginx/nginx.conf,nginx/templates/default.conf.template"
           target: /opt/jewellery
 
       - name: Pull & restart containers
@@ -83,7 +83,7 @@ jobs:
             export DOMAIN=${{ secrets.DOMAIN }}
             export SHOP_CODE=${{ secrets.SHOP_CODE }}
             export SITE_NAME=${{ secrets.SITE_NAME }}
-            sed -i 's/\${DOMAIN}/'"$DOMAIN"'/g' nginx/conf.d/default.conf
+            export APP_KEY=${{ secrets.APP_KEY }}
             docker compose down || true
             docker compose pull
             docker compose up -d

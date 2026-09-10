@@ -39,8 +39,8 @@ git clone <repo> /opt/jewellery && cd /opt/jewellery
 
 # 2. Configure
 cp .env.example .env        # edit DOMAIN, SHOP_CODE, SITE_NAME
+nano .env                   # set APP_KEY (run `php artisan key:generate --show`)
 cp server/.env.example server/.env
-cd server && php artisan key:generate && cd ..
 
 # 3. Initialize storage + SQLite DB
 mkdir -p server/storage server/database
@@ -50,6 +50,10 @@ cd server && php artisan migrate --force && php artisan storage:link && cd ..
 docker compose build
 docker compose up -d
 ```
+
+`APP_KEY` in `.env` is injected into the `api` container. The `api`
+container also runs `php artisan migrate --force` on every start, so future
+migrations apply automatically on redeploy.
 
 ## TLS (Let's Encrypt)
 
@@ -63,8 +67,10 @@ echo "0 0 * * * certbot renew --webroot -w /opt/jewellery/certbot/www --quiet" |
 docker compose restart nginx
 ```
 
-Then replace `server_name _;` in `nginx/conf.d/default.conf` with your domain
-(or let the CD workflow's sed do it) and restart nginx.
+The nginx image renders `nginx/templates/default.conf.template` with
+`envsubst`, substituting the `DOMAIN` env var (from `.env`). No manual sed is
+needed. If you change `DOMAIN`, restart nginx:
+`docker compose up -d nginx`.
 
 ## Automatic deployment (GitHub Actions)
 
@@ -82,6 +88,7 @@ Secrets required for CD:
 | `DEPLOY_USER` | SSH user |
 | `DEPLOY_KEY` | Private SSH key |
 | `DOMAIN` | Public domain |
+| `APP_KEY` | Laravel app key (from step 2) |
 | `SHOP_CODE`, `SITE_NAME` | Website branding |
 | `NEXT_PUBLIC_API_URL` | `https://<DOMAIN>` |
 
@@ -104,6 +111,12 @@ SQLite lives in `server/database/database.sqlite` and uploads in
 
 ```bash
 tar czf backup-$(date +%F).tar.gz server/database server/storage
+```
+
+For a crash-consistent SQLite copy while the stack runs, prefer:
+
+```bash
+sqlite3 server/database/database.sqlite ".backup 'backup-$(date +%F).sqlite'"
 ```
 
 Restore by placing the files back and restarting the `api` container.
