@@ -1,8 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
+import WhatsAppButton from "../components/WhatsAppButton";
 import { listRequests, updateRequest } from "../lib/api";
 import type { WebsiteCustomRequest } from "../lib/types";
 
 const STATUSES = ["Pending", "In Progress", "Quoted", "Completed", "Rejected"];
+
+const requestWaText = (r: WebsiteCustomRequest) => {
+  return [
+    `Salam ${r.name}! This is Tayyab Jewellers regarding your custom jewellery request.`,
+    r.jewellery_type ? `Jewellery: ${r.jewellery_type}` : "",
+    r.metal ? `Metal: ${r.metal}${r.karat ? ` ${r.karat}K` : ""}` : "",
+    r.budget ? `Budget: Rs. ${Number(r.budget).toLocaleString()}` : "",
+    `Status: ${r.status}`,
+    "We will update you soon. Thank you!",
+  ]
+    .filter(Boolean)
+    .join("\n");
+};
 
 export default function Requests() {
   const [rows, setRows] = useState<WebsiteCustomRequest[]>([]);
@@ -57,6 +71,7 @@ export default function Requests() {
                 <th className="px-4 py-3 text-end">Budget</th>
                 <th className="px-4 py-3 text-start">Status</th>
                 <th className="px-4 py-3 text-start">Requested</th>
+                <th className="px-4 py-3 text-end">Contact</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -85,6 +100,9 @@ export default function Requests() {
                   </td>
                   <td className="px-4 py-2.5 text-xs text-stone-500">
                     {new Date(r.created_at).toLocaleString()}
+                  </td>
+                  <td className="px-4 py-2.5 text-end">
+                    <WhatsAppButton phone={r.phone} text={requestWaText(r)} />
                   </td>
                 </tr>
               ))}

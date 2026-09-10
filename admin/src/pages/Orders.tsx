@@ -1,6 +1,25 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
+import WhatsAppButton from "../components/WhatsAppButton";
 import { downloadCsv, listOrders, updateOrder } from "../lib/api";
 import type { OnlineOrder } from "../lib/types";
+
+const rupee = (n: number) => `Rs. ${Number(n).toLocaleString()}`;
+
+const orderWaText = (o: OnlineOrder) => {
+  const lines = o.items
+    .map((i) => `• ${i.product_name} × ${i.qty} — ${rupee(i.line_total)}`)
+    .join("\n");
+  return [
+    `Salam ${o.customer_name}! This is Tayyab Jewellers regarding your order ${o.order_number}.`,
+    lines,
+    `Total: ${rupee(o.total)}`,
+    `Status: ${o.status} | Payment: ${o.payment_status.toUpperCase()}`,
+    o.notes ? `Note: ${o.notes}` : "",
+    "Please feel free to reply here. Thank you!",
+  ]
+    .filter(Boolean)
+    .join("\n");
+};
 
 const ORDER_STATUSES = ["Pending", "Confirmed", "In Progress", "Ready", "Completed", "Cancelled"];
 
@@ -142,6 +161,9 @@ export default function Orders() {
                             {[o.city, o.address].filter(Boolean).join(", ")}
                           </p>
                         )}
+                        <div className="mt-4">
+                          <WhatsAppButton phone={o.customer_phone} text={orderWaText(o)} label="WhatsApp customer" />
+                        </div>
                       </td>
                     </tr>
                   )}

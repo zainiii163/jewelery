@@ -44,6 +44,16 @@ export default function CheckoutPage() {
           {t("orderNumber")}: <span className="font-bold">{result}</span>
         </p>
         <p className="mt-2 text-sm text-stone-500">{t("total")}: {fmtMoney(subtotal)}</p>
+        <a
+          href={`https://wa.me/923001234567?text=${encodeURIComponent(
+            `Salam! I just placed order ${result} on the website. Please confirm it.`
+          )}`}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-6 inline-block rounded-full border-2 border-green-600 px-7 py-3 text-sm font-semibold text-green-700 hover:bg-green-50"
+        >
+          {t("confirmOnWhatsapp")}
+        </a>
         <Link href="/shop" className="mt-8 inline-block rounded-full bg-amber-600 px-7 py-3 text-sm font-semibold text-white hover:bg-amber-700">
           {t("continueShopping")}
         </Link>

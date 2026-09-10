@@ -1,8 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
+import WhatsAppButton from "../components/WhatsAppButton";
 import { listAppointments, updateAppointment } from "../lib/api";
 import type { WebsiteAppointment } from "../lib/types";
 
 const STATUSES = ["Pending", "Confirmed", "Completed", "Cancelled", "No Show"];
+
+const appointmentWaText = (a: WebsiteAppointment) => {
+  const when = [a.date || "", a.time || ""].filter(Boolean).join(" at ");
+  return [
+    `Salam ${a.name}! This is Tayyab Jewellers.`,
+    when ? `Your appointment is ${when}.` : "Your appointment has been received.",
+    a.purpose ? `Purpose: ${a.purpose}` : "",
+    `Status: ${a.status}`,
+    "Please confirm by replying here. Thank you!",
+  ]
+    .filter(Boolean)
+    .join("\n");
+};
 
 export default function Appointments() {
   const [rows, setRows] = useState<WebsiteAppointment[]>([]);
@@ -56,6 +70,7 @@ export default function Appointments() {
                 <th className="px-4 py-3 text-start">Purpose</th>
                 <th className="px-4 py-3 text-start">Status</th>
                 <th className="px-4 py-3 text-start">Requested</th>
+                <th className="px-4 py-3 text-end">Contact</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -80,6 +95,9 @@ export default function Appointments() {
                   </td>
                   <td className="px-4 py-2.5 text-xs text-stone-500">
                     {new Date(a.created_at).toLocaleString()}
+                  </td>
+                  <td className="px-4 py-2.5 text-end">
+                    <WhatsAppButton phone={a.phone} text={appointmentWaText(a)} />
                   </td>
                 </tr>
               ))}
