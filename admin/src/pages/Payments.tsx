@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { downloadCsv } from "../lib/api";
-
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 function getToken(): string {
@@ -42,7 +40,7 @@ const fmtRs = (n: number) => `Rs ${Number(n).toLocaleString("en-PK", { maximumFr
 /* ── helpers ── */
 const listPayments = (shopCode: string, params: Record<string, string> = {}) => {
   const q = new URLSearchParams({ shop_code: shopCode, ...params });
-  return request<Payment[]>(`/api/shop/payments?${q.toString()}`);
+  return apiRequest<Payment[]>(`/api/shop/payments?${q.toString()}`);
 };
 
 const createPayment = (payload: {
@@ -53,7 +51,7 @@ const createPayment = (payload: {
   type: string;
   reference: string;
   notes: string;
-}) => request<{ ok: boolean; payment: Payment }>("/api/shop/payments", {
+}) => apiRequest<{ ok: boolean; payment: Payment }>("/api/shop/payments", {
   method: "POST",
   body: JSON.stringify(payload),
 });
