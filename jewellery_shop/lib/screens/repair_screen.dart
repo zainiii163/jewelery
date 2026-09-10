@@ -200,7 +200,7 @@ class _RepairFormDialogState extends State<RepairFormDialog> {
         child: SingleChildScrollView(
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             DropdownButtonFormField<int?>(
-              value: _customerId,
+              initialValue: _customerId,
               decoration: InputDecoration(
                 labelText: loc.t('selectCustomer'),
                 border: const OutlineInputBorder(),
@@ -256,7 +256,7 @@ class _RepairFormDialogState extends State<RepairFormDialog> {
                 child: LabeledField(
                   label: loc.t('status'),
                   child: DropdownButtonFormField<String>(
-                    value: _status,
+                    initialValue: _status,
                     items: _statuses
                         .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                         .toList(),

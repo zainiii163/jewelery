@@ -164,7 +164,7 @@ class _PaymentFormDialogState extends State<PaymentFormDialog> {
         width: 440,
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           DropdownButtonFormField<int?>(
-            value: _customerId,
+            initialValue: _customerId,
             decoration: InputDecoration(
               labelText: loc.t('selectCustomer'),
               border: const OutlineInputBorder(),
@@ -185,7 +185,7 @@ class _PaymentFormDialogState extends State<PaymentFormDialog> {
               child: LabeledField(
                 label: loc.t('paymentMethod'),
                 child: DropdownButtonFormField<String>(
-                  value: _method,
+                  initialValue: _method,
                   items: const [
                     DropdownMenuItem(value: 'Cash', child: Text('Cash')),
                     DropdownMenuItem(value: 'Bank', child: Text('Bank')),

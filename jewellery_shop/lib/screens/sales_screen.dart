@@ -338,7 +338,7 @@ class _SalesScreenState extends State<SalesScreen> {
                   padding: const EdgeInsets.all(10),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                     DropdownButtonFormField<int?>(
-                      value: _selectedCustomerId,
+                      initialValue: _selectedCustomerId,
                       decoration: InputDecoration(
                         labelText: loc.t('selectCustomer'),
                         border: const OutlineInputBorder(),
@@ -394,7 +394,7 @@ class _SalesScreenState extends State<SalesScreen> {
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
-                      value: _paymentMethod,
+                      initialValue: _paymentMethod,
                       decoration: const InputDecoration(
                         labelText: 'Payment Method',
                         border: OutlineInputBorder(),

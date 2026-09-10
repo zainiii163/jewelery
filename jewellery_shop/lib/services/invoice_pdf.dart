@@ -76,9 +76,8 @@ class InvoicePdf {
 
   static Future<pw.Font> _loadBaseFont(ByteData? injected) async {
     if (injected != null) return pw.Font.ttf(injected);
-    if (_fontBytes == null) {
-      _fontBytes = await rootBundle.load('assets/fonts/NotoNaskhArabic.ttf');
-    }
+    _fontBytes ??=
+        await rootBundle.load('assets/fonts/NotoNaskhArabic.ttf');
     return pw.Font.ttf(_fontBytes!);
   }
 
@@ -203,14 +202,14 @@ class InvoicePdf {
                         '${it.karat}K',
                         _w(it.netWeight),
                         _money(it.goldRate, settings),
-                        '${it.makingCharges.toStringAsFixed(0)}',
-                        '${it.stoneCharges.toStringAsFixed(0)}',
+                        it.makingCharges.toStringAsFixed(0),
+                        it.stoneCharges.toStringAsFixed(0),
                         _money(it.lineTotal, settings),
                       ]
                   ],
             border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.5),
             headerDecoration: const pw.BoxDecoration(
-                color: PdfColors.grey100, borderRadius: const pw.BorderRadius.all(pw.Radius.circular(2))),
+                color: PdfColors.grey100, borderRadius: pw.BorderRadius.all(pw.Radius.circular(2))),
             headerStyle:
                 pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold),
             cellStyle: const pw.TextStyle(fontSize: 8),

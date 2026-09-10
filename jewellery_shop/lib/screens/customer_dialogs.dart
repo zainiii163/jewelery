@@ -507,7 +507,7 @@ class _LedgerTabState extends State<LedgerTab> {
   Widget _summary(String label, String value, Color color, dynamic loc, String cur) {
     return Expanded(
       child: Card(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Column(children: [

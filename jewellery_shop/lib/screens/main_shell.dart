@@ -71,7 +71,7 @@ class _MainShellState extends State<MainShell> {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(
-          content: Text('${loc.t('logoutAfterIdle')} (${_idleMinutes} '
+          content: Text('${loc.t('logoutAfterIdle')} ($_idleMinutes '
               '${loc.t('idleMinutes')})')));
     _appState.logout();
     Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false);

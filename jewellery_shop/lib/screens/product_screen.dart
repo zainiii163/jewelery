@@ -366,7 +366,7 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
                     child: LabeledField(
                       label: loc.t('metalType'),
                       child: DropdownButtonFormField<String>(
-                        value: _metalType,
+                        initialValue: _metalType,
                         items: [
                           DropdownMenuItem(value: 'Gold', child: Text(loc.t('gold'))),
                           DropdownMenuItem(value: 'Silver', child: Text(loc.t('silver'))),
@@ -383,7 +383,7 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
                     child: LabeledField(
                       label: loc.t('karat'),
                       child: DropdownButtonFormField<int>(
-                        value: _karat,
+                        initialValue: _karat,
                         items: [24, 22, 21, 20, 18]
                             .map((k) => DropdownMenuItem(value: k, child: Text('${k}K')))
                             .toList(),
@@ -398,7 +398,7 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
                     child: LabeledField(
                       label: loc.t('quantity'),
                       child: DropdownButtonFormField<int>(
-                        value: _quantity,
+                        initialValue: _quantity,
                         items: [1, 2, 3, 4, 5]
                             .map((q) => DropdownMenuItem(value: q, child: Text('$q')))
                             .toList(),
@@ -497,7 +497,7 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
                 LabeledField(
                   label: loc.t('status'),
                   child: DropdownButtonFormField<String>(
-                    value: _status,
+                    initialValue: _status,
                     items: [
                       'In Stock', 'Sold', 'Reserved', 'Returned',
                       'Exchanged', 'Repair', 'Lost/Damaged'

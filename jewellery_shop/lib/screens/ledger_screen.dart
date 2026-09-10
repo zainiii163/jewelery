@@ -47,7 +47,7 @@ class _LedgerScreenState extends State<LedgerScreen> {
         Padding(
           padding: const EdgeInsets.all(12),
           child: DropdownButtonFormField<int?>(
-            value: _selectedCustomerId,
+            initialValue: _selectedCustomerId,
             decoration: InputDecoration(
               labelText: loc.t('selectCustomer'),
               border: const OutlineInputBorder(),
@@ -57,8 +57,7 @@ class _LedgerScreenState extends State<LedgerScreen> {
               const DropdownMenuItem(value: null, child: Text('-')),
               ..._customers
                   .map((c) =>
-                      DropdownMenuItem(value: c.id, child: Text(c.name)))
-                  .toList(),
+                      DropdownMenuItem(value: c.id, child: Text(c.name))),
             ],
             onChanged: (v) {
               setState(() => _selectedCustomerId = v);

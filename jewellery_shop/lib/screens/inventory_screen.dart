@@ -78,7 +78,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             DropdownButtonFormField<String>(
-              value: status,
+              initialValue: status,
               decoration: InputDecoration(labelText: loc.t('status')),
               items: [
                 for (final s in const [
@@ -150,7 +150,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             DropdownButtonFormField<String>(
-              value: type,
+              initialValue: type,
               decoration: InputDecoration(labelText: loc.t('moveType')),
               items: [
                 for (final t in const [
@@ -246,7 +246,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           '${m.date?.toLocal().toString().split(' ').first ?? ''}'
                           '${m.notes.isNotEmpty ? ' - ${m.notes}' : ''}'),
                       trailing: Text(
-                          '${loc.formatWeight(m.weight)}g (${currency}${m.quantity})',
+                          '${loc.formatWeight(m.weight)}g ($currency${m.quantity})',
                           style: const TextStyle(fontWeight: FontWeight.bold)),
                     );
                   },
@@ -417,7 +417,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   Widget _summaryCard(dynamic loc, String label, String value, Color color) {
     return Expanded(
       child: Card(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Column(children: [

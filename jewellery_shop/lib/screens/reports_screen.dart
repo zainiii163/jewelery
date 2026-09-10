@@ -242,7 +242,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
       Color color) {
     return Expanded(
       child: Card(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Column(children: [

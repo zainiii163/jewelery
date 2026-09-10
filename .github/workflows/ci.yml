@@ -36,6 +36,7 @@ jobs:
           cp .env.example .env
           php artisan key:generate
           touch database/database.sqlite
+          echo "DB_DATABASE=$(pwd)/database/database.sqlite" >> .env
 
       - name: Run migrations
         run: php artisan migrate --force

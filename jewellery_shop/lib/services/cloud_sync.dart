@@ -109,8 +109,8 @@ class CloudSyncService {
   Future<void> updateOrder(int id,
       {String? status, String? paymentStatus}) async {
     final body = jsonEncode({
-      if (status != null) 'status': status,
-      if (paymentStatus != null) 'payment_status': paymentStatus,
+      'status': ?status,
+      'payment_status': ?paymentStatus,
     });
     final res = await http
         .patch(

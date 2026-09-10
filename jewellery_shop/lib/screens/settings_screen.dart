@@ -143,54 +143,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text(loc.t('language'),
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                RadioListTile<String>(
-                  title: Text(loc.t('english')),
-                  value: 'en',
+                RadioGroup<String>(
                   groupValue: _appState.settings.language,
                   onChanged: (v) {
-                    _appState.setLanguage(v!);
+                    _appState.setLanguage(v ?? _appState.settings.language);
                     setState(() {});
                   },
-                ),
-                RadioListTile<String>(
-                  title: Text(loc.t('urdu')),
-                  value: 'ur',
-                  groupValue: _appState.settings.language,
-                  onChanged: (v) {
-                    _appState.setLanguage(v!);
-                    setState(() {});
-                  },
+                  child: Column(
+                    children: [
+                      RadioListTile<String>(
+                        title: Text(loc.t('english')),
+                        value: 'en',
+                      ),
+                      RadioListTile<String>(
+                        title: Text(loc.t('urdu')),
+                        value: 'ur',
+                      ),
+                    ],
+                  ),
                 ),
                 const Divider(),
                 Text(loc.t('invoiceLanguage'),
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                RadioListTile<String>(
-                  title: Text(loc.t('english')),
-                  value: 'en',
+                RadioGroup<String>(
                   groupValue: _appState.settings.invoiceLanguage,
                   onChanged: (v) {
-                    _appState.setInvoiceLanguage(v!);
+                    _appState
+                        .setInvoiceLanguage(v ?? _appState.settings.invoiceLanguage);
                     setState(() {});
                   },
-                ),
-                RadioListTile<String>(
-                  title: Text(loc.t('urdu')),
-                  value: 'ur',
-                  groupValue: _appState.settings.invoiceLanguage,
-                  onChanged: (v) {
-                    _appState.setInvoiceLanguage(v!);
-                    setState(() {});
-                  },
-                ),
-                RadioListTile<String>(
-                  title: Text(loc.t('both')),
-                  value: 'both',
-                  groupValue: _appState.settings.invoiceLanguage,
-                  onChanged: (v) {
-                    _appState.setInvoiceLanguage(v!);
-                    setState(() {});
-                  },
+                  child: Column(
+                    children: [
+                      RadioListTile<String>(
+                        title: Text(loc.t('english')),
+                        value: 'en',
+                      ),
+                      RadioListTile<String>(
+                        title: Text(loc.t('urdu')),
+                        value: 'ur',
+                      ),
+                      RadioListTile<String>(
+                        title: Text(loc.t('both')),
+                        value: 'both',
+                      ),
+                    ],
+                  ),
                 ),
               ]),
             ),

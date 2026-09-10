@@ -137,7 +137,7 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
           LabeledField(
             label: loc.t('expenseCategory'),
             child: DropdownButtonFormField<String>(
-              value: _category,
+              initialValue: _category,
               items: _categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
               onChanged: (v) => setState(() => _category = v ?? 'Other'),
               decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true),
@@ -162,7 +162,7 @@ class _ExpenseFormDialogState extends State<ExpenseFormDialog> {
               child: LabeledField(
                 label: loc.t('paymentMethod'),
                 child: DropdownButtonFormField<String>(
-                  value: _method,
+                  initialValue: _method,
                   items: const [
                     DropdownMenuItem(value: 'Cash', child: Text('Cash')),
                     DropdownMenuItem(value: 'Bank', child: Text('Bank')),

@@ -156,7 +156,7 @@ class _BackupScreenState extends State<BackupScreen> {
       final dl = p.join(tmp, 'jewellery_shop_cloud_restore.db');
       final r = await BackupManager.instance.restoreFromCloud(dl);
       await File(dl).copy(await _db.currentDbPath());
-      _msg('$r');
+      _msg(r);
     } catch (e) {
       _msg('$e');
     } finally {

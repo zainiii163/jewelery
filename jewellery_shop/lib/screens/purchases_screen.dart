@@ -207,7 +207,7 @@ class _PurchaseFormDialogState extends State<PurchaseFormDialog> {
             key: _formKey,
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               DropdownButtonFormField<int?>(
-                value: _supplierId,
+                initialValue: _supplierId,
                 decoration: InputDecoration(
                   labelText: loc.t('supplier'),
                   border: const OutlineInputBorder(),
@@ -236,7 +236,7 @@ class _PurchaseFormDialogState extends State<PurchaseFormDialog> {
                   child: LabeledField(
                     label: loc.t('metalType'),
                     child: DropdownButtonFormField<String>(
-                      value: _metalType,
+                      initialValue: _metalType,
                       items: [
                         DropdownMenuItem(value: 'Gold', child: Text(loc.t('gold'))),
                         DropdownMenuItem(value: 'Silver', child: Text(loc.t('silver'))),
@@ -252,7 +252,7 @@ class _PurchaseFormDialogState extends State<PurchaseFormDialog> {
                   child: LabeledField(
                     label: loc.t('karat'),
                     child: DropdownButtonFormField<int>(
-                      value: _karat,
+                      initialValue: _karat,
                       items: [24, 22, 21, 20, 18]
                           .map((k) => DropdownMenuItem(value: k, child: Text('${k}K')))
                           .toList(),

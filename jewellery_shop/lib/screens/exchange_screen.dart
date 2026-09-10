@@ -490,7 +490,7 @@ class _ExchangeFormDialogState extends State<ExchangeFormDialog> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       DropdownButtonFormField<int>(
-                        value: _selectedCustomerId,
+                        initialValue: _selectedCustomerId,
                         decoration: InputDecoration(
                             labelText: loc.t('selectCustomer')),
                         items: [
@@ -594,7 +594,7 @@ class _ExchangeFormDialogState extends State<ExchangeFormDialog> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            value: _paymentMethod,
+                            initialValue: _paymentMethod,
                             decoration: InputDecoration(
                                 labelText: loc.t('paymentMethod'),
                                 isDense: true),

@@ -273,7 +273,7 @@ class _UserFormDialogState extends State<UserFormDialog> {
                 decoration: InputDecoration(labelText: loc.t('pin'))),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: _role,
+              initialValue: _role,
               decoration: const InputDecoration(
                   border: OutlineInputBorder(), labelText: 'Role'),
               items: const [
