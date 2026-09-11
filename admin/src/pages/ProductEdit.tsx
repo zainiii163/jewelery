@@ -1,11 +1,14 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getProduct, mediaUrl, upsertProduct, uploadMedia } from "../lib/api";
+import Barcode from "../components/Barcode";
+
+interface Category { id: number; name: string; children?: Category[]; }
 
 interface FormState {
   sku: string;
   name: string;
-  category: string;
+  category_id: string;
   metal_type: "gold" | "silver";
   karat: number | null;
   net_weight: string;
@@ -27,7 +30,7 @@ interface FormState {
 const empty: FormState = {
   sku: "",
   name: "",
-  category: "",
+  category_id: "",
   metal_type: "gold",
   karat: 22,
   net_weight: "",
@@ -55,6 +58,16 @@ export default function ProductEdit() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const API = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+    const token = localStorage.getItem("jw_admin_token");
+    fetch(`${API}/api/shop/categories`, { headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) } })
+      .then((r) => r.json())
+      .then((d) => setCategories(d.categories ?? []))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (isNew) return;
@@ -64,7 +77,7 @@ export default function ProductEdit() {
         setForm({
           sku: p.sku,
           name: p.name,
-          category: p.category?.name ?? "",
+          category_id: p.category_id ? String(p.category_id) : "",
           metal_type: p.metal_type,
           karat: p.karat,
           net_weight: String(p.net_weight ?? ""),
@@ -105,7 +118,7 @@ export default function ProductEdit() {
       const payload: Record<string, unknown> = {
         sku: form.sku.trim(),
         name: form.name.trim(),
-        category: form.category.trim() || null,
+        category_id: form.category_id ? Number(form.category_id) : null,
         metal_type: form.metal_type,
         karat: num(String(form.karat)),
         net_weight: num(form.net_weight) ?? 0,
@@ -195,7 +208,17 @@ export default function ProductEdit() {
             <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-stone-500">
               Category
             </label>
-            <input className={input} value={form.category} onChange={(e) => set("category", e.target.value)} placeholder="Rings" />
+            <select className={input} value={form.category_id} onChange={(e) => set("category_id", e.target.value)}>
+              <option value="">No category</option>
+              {categories.map((cat) => (
+                <optgroup key={cat.id} label={cat.name}>
+                  <option value={cat.id}>{cat.name}</option>
+                  {cat.children?.map((sub) => (
+                    <option key={sub.id} value={sub.id}>  {sub.name}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-stone-500">
@@ -320,7 +343,13 @@ export default function ProductEdit() {
 
       {!isNew && (
         <section className="mt-10 border-t border-stone-200 pt-6">
-          <h2 className="text-lg font-bold text-stone-900">Photos</h2>
+          <h2 className="text-lg font-bold text-stone-900">Barcode</h2>
+          <div className="mt-3 rounded-xl border border-stone-200 bg-white p-4 inline-block">
+            <Barcode value={form.sku} width={2} height={50} />
+            <p className="mt-2 text-center font-mono text-xs text-stone-500">{form.sku}</p>
+          </div>
+
+          <h2 className="mt-8 text-lg font-bold text-stone-900">Photos</h2>
           <div className="mt-4 flex flex-wrap gap-3">
             {media.map((m) => (
               // eslint-disable-next-line @next/next/no-img-element

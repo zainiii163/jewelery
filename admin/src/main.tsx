@@ -19,6 +19,8 @@ import Repairs from "./pages/Repairs";
 import Payments from "./pages/Payments";
 import Staff from "./pages/Staff";
 import Settings from "./pages/Settings";
+import Categories from "./pages/Categories";
+import SalesRecords from "./pages/SalesRecords";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -34,6 +36,8 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/customers" element={<Customers />} />
             <Route path="/appointments" element={<Appointments />} />
             <Route path="/requests" element={<Requests />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/sales" element={<SalesRecords />} />
             <Route path="/gold-rates" element={<GoldRates />} />
             <Route path="/expenses" element={<Expenses />} />
             <Route path="/repairs" element={<Repairs />} />

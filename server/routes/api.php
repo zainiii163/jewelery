@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\BusinessSyncController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ExpenseController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PosReportsController;
 use App\Http\Controllers\RepairController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\SaleRecordController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ShopSyncController;
 use App\Http\Controllers\StaffController;
@@ -112,6 +114,18 @@ Route::middleware(['auth:sanctum', 'throttle:api-general'])->group(function () {
     // Settings
     Route::get('/shop/settings', [SettingController::class, 'index']);
     Route::post('/shop/settings', [SettingController::class, 'store']);
+
+    // Categories (admin panel)
+    Route::get('/shop/categories', [CategoryController::class, 'index']);
+    Route::post('/shop/categories', [CategoryController::class, 'store']);
+    Route::put('/shop/categories/{id}', [CategoryController::class, 'update']);
+    Route::delete('/shop/categories/{id}', [CategoryController::class, 'destroy']);
+
+    // Sale Records (admin panel — record in-shop sales with photos)
+    Route::get('/shop/sale-records', [SaleRecordController::class, 'index']);
+    Route::post('/shop/sale-records', [SaleRecordController::class, 'store']);
+    Route::get('/shop/sale-records/{id}', [SaleRecordController::class, 'show']);
+    Route::delete('/shop/sale-records/{id}', [SaleRecordController::class, 'destroy']);
 
     // Reports & analytics (admin panel + desktop app)
     Route::get('/shop/reports/summary', [ReportsController::class, 'summary']);
