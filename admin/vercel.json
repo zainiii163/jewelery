@@ -2,6 +2,9 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "env": {
+    "VITE_API_URL": "https://jewelery-production-f514.up.railway.app"
+  },
   "rewrites": [
     { "source": "/((?!assets/).*)", "destination": "/index.html" }
   ]

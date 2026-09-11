@@ -58,6 +58,7 @@ class ShopSyncController extends Controller
         $validated = $request->validate([
             'sku' => ['required', 'string', 'max:50'],
             'name' => ['required', 'string', 'max:255'],
+            'category_id' => ['nullable', 'integer', 'exists:product_categories,id'],
             'category' => ['nullable', 'string', 'max:255'],
             'metal_type' => ['sometimes', 'in:gold,silver,other'],
             'purity' => ['nullable', 'numeric', 'min:0', 'max:100'],
@@ -82,19 +83,20 @@ class ShopSyncController extends Controller
 
         $shop = $request->user();
 
-        $category = null;
+        $categoryId = $validated['category_id'] ?? null;
         if ($request->filled('category')) {
             $category = ProductCategory::firstOrCreate(
                 ['shop_id' => $shop->id, 'slug' => strtolower(str_replace(' ', '-', $validated['category']))],
                 ['name' => $validated['category']],
             );
+            $categoryId = $category->id;
         }
 
         $product = Product::updateOrCreate(
             ['shop_id' => $shop->id, 'sku' => $validated['sku']],
             [
                 'name' => $validated['name'],
-                'category_id' => $category?->id,
+                'category_id' => $categoryId,
                 'metal_type' => $request->input('metal_type', 'gold'),
                 'purity' => $request->input('purity'),
                 'karat' => $request->input('karat'),

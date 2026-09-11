@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getProduct, mediaUrl, upsertProduct, uploadMedia } from "../lib/api";
+import { API, getProduct, mediaUrl, upsertProduct, uploadMedia } from "../lib/api";
 import Barcode from "../components/Barcode";
 
 interface Category { id: number; name: string; children?: Category[]; }
@@ -61,7 +61,6 @@ export default function ProductEdit() {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    const API = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
     const token = localStorage.getItem("jw_admin_token");
     fetch(`${API}/api/shop/categories`, { headers: { Accept: "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) } })
       .then((r) => r.json())
