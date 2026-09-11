@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../lib/AuthContext";
 
@@ -11,7 +11,9 @@ export default function Login() {
   const [busy, setBusy] = useState(false);
   const [showPass, setShowPass] = useState(false);
 
-  if (token) nav("/", { replace: true });
+  useEffect(() => {
+    if (token) nav("/", { replace: true });
+  }, [token, nav]);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -49,6 +51,7 @@ export default function Login() {
               onChange={(e) => setShopCode(e.target.value)}
               className="w-full rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm font-medium outline-none transition-colors focus:border-amber-500 focus:bg-white focus:ring-2 focus:ring-amber-500/20"
               required
+              autoComplete="username"
             />
           </div>
           <div>
@@ -60,6 +63,7 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 pr-12 text-sm font-medium outline-none transition-colors focus:border-amber-500 focus:bg-white focus:ring-2 focus:ring-amber-500/20"
                 required
+                autoComplete="current-password"
               />
               <button
                 type="button"
