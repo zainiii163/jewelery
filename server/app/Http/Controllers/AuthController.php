@@ -65,12 +65,10 @@ class AuthController extends Controller
                 'line' => $e->getLine(),
             ]);
             return response()->json([
-                'error' => config('app.debug') ? $e->getMessage() : 'Server Error',
-                'debug' => config('app.debug') ? [
-                    'message' => $e->getMessage(),
-                    'file' => basename($e->getFile()),
-                    'line' => $e->getLine(),
-                ] : null,
+                'error' => $e->getMessage(),
+                'file' => basename($e->getFile()),
+                'line' => $e->getLine(),
+                'type' => get_class($e),
             ], 500);
         }
     }
