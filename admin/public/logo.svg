@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#B8860B"/>
+      <stop offset="50%" style="stop-color:#DAA520"/>
+      <stop offset="100%" style="stop-color:#B8860B"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="60" fill="none"/>
+  <!-- T -->
+  <text x="8" y="42" font-family="Georgia, serif" font-size="38" font-weight="bold" fill="url(#gold)">T</text>
+  <!-- J -->
+  <text x="30" y="42" font-family="Georgia, serif" font-size="38" font-weight="bold" fill="url(#gold)">J</text>
+  <!-- Diamond -->
+  <polygon points="48,12 54,6 60,12 54,18" fill="url(#gold)" opacity="0.8"/>
+  <line x1="54" y1="4" x2="54" y2="2" stroke="#DAA520" stroke-width="1"/>
+  <circle cx="54" cy="1.5" r="1" fill="#DAA520"/>
+  <!-- Name -->
+  <text x="68" y="28" font-family="Georgia, serif" font-size="16" font-weight="bold" fill="#1c1917" letter-spacing="2">TAYYAB</text>
+  <text x="68" y="46" font-family="Georgia, serif" font-size="11" fill="#78716c" letter-spacing="4">JEWELLERS</text>
+  <!-- Lines -->
+  <line x1="68" y1="50" x2="195" y2="50" stroke="#DAA520" stroke-width="0.5" opacity="0.5"/>
+</svg>
