@@ -10,19 +10,19 @@ use App\Http\Controllers\PosReportsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\ShopSyncController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 
-// Register rate limiters
 RateLimiter::for('login', function () {
-    return \Illuminate\Http\Middleware\RateLimiter::perMinute(5); // 5 attempts per minute
+    return Limit::perMinute(5);
 });
 
 RateLimiter::for('checkout', function () {
-    return \Illuminate\Http\Middleware\RateLimiter::perMinute(20); // 20 orders per minute
+    return Limit::perMinute(20);
 });
 
 RateLimiter::for('api-general', function () {
-    return \Illuminate\Http\Middleware\RateLimiter::perMinute(120); // 120 requests per minute
+    return Limit::perMinute(120);
 });
 
 // NOTE: Laravel 12 registers this file with the automatic `api` prefix
