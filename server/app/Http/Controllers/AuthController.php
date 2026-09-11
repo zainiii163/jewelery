@@ -17,47 +17,61 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $validated = $request->validate([
-            'shop_code' => ['required', 'string', 'max:50'],
-            'password' => ['required', 'string', 'max:255'],
-        ]);
+        try {
+            $validated = $request->validate([
+                'shop_code' => ['required', 'string', 'max:50'],
+                'password' => ['required', 'string', 'max:255'],
+            ]);
 
-        $shopCode = strtoupper(trim($validated['shop_code']));
-        $shop = Shop::where('shop_code', $shopCode)->first();
+            $shopCode = strtoupper(trim($validated['shop_code']));
+            $shop = Shop::where('shop_code', $shopCode)->first();
 
-        if (! $shop || ! Hash::check($validated['password'], $shop->password)) {
-            // Log failed attempt
-            Log::warning('Failed login attempt', [
+            if (! $shop || ! Hash::check($validated['password'], $shop->password)) {
+                Log::warning('Failed login attempt', [
+                    'shop_code' => $shopCode,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+
+                throw ValidationException::withMessages([
+                    'shop_code' => ['The provided credentials are incorrect.'],
+                ]);
+            }
+
+            // Delete old tokens (max 3 active sessions)
+            $oldTokens = $shop->tokens()->orderByDesc('created_at')->skip(2)->get();
+            foreach ($oldTokens as $token) {
+                $token->delete();
+            }
+
+            $token = $shop->createToken('desktop', ['*']);
+
+            Log::info('Successful login', [
                 'shop_code' => $shopCode,
                 'ip' => $request->ip(),
-                'user_agent' => $request->userAgent(),
             ]);
 
-            throw ValidationException::withMessages([
-                'shop_code' => ['The provided credentials are incorrect.'],
+            return response()->json([
+                'token' => $token->plainTextToken,
+                'shop' => [
+                    'shop_code' => $shop->shop_code,
+                    'name' => $shop->name,
+                ],
             ]);
+        } catch (\Exception $e) {
+            Log::error('Login exception', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            return response()->json([
+                'error' => config('app.debug') ? $e->getMessage() : 'Server Error',
+                'debug' => config('app.debug') ? [
+                    'message' => $e->getMessage(),
+                    'file' => basename($e->getFile()),
+                    'line' => $e->getLine(),
+                ] : null,
+            ], 500);
         }
-
-        // Delete old tokens (max 3 active sessions)
-        $oldTokens = $shop->tokens()->orderByDesc('created_at')->skip(2)->get();
-        foreach ($oldTokens as $token) {
-            $token->delete();
-        }
-
-        $token = $shop->createToken('desktop', ['*']);
-
-        // Log successful login
-        Log::info('Successful login', [
-            'shop_code' => $shopCode,
-            'ip' => $request->ip(),
-        ]);
-
-        return response()->json([
-            'token' => $token->plainTextToken,
-            'shop' => [
-                'shop_code' => $shop->shop_code,
-                'name' => $shop->name,
-            ],
-        ]);
     }
 }
