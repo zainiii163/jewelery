@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import { clearToken, getToken, login as apiLogin, setToken } from "../lib/api";
+import { clearToken, getToken, login as apiLogin, setToken as saveToken } from "../lib/api";
 
 interface AuthState {
   token: string | null;
@@ -18,7 +18,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (shop_code: string, password: string) => {
     const res = await apiLogin(shop_code, password);
-    setToken(res.token);
+    saveToken(res.token);
+    setTokenState(res.token);
     setShopName(res.shop.name);
     localStorage.setItem("jw_admin_shop", res.shop.name);
   };
