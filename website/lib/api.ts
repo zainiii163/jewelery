@@ -9,9 +9,9 @@ import type {
 const API = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
 const SHOP_CODE = process.env.NEXT_PUBLIC_SHOP_CODE || "MAIN";
 
-/** The API only serves media from its own /storage — rebuild URLs against it. */
+/** The API serves media from its own /api/media — no symlink needed. */
 export const mediaUrl = (m: Pick<ProductMedia, "path">) =>
-  `${API}/storage/${m.path}`;
+  `${API}/api/media/${m.path}`;
 
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${API}${path}`, {

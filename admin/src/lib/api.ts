@@ -19,7 +19,7 @@ export const getToken = () => localStorage.getItem(TOKEN_KEY);
 export const setToken = (t: string) => localStorage.setItem(TOKEN_KEY, t);
 export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
 
-export const mediaUrl = (m: Pick<ProductMedia, "path">) => `${API}/storage/${m.path}`;
+export const mediaUrl = (m: Pick<ProductMedia, "path">) => `${API}/api/media/${m.path}`;
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const token = getToken();

@@ -35,6 +35,21 @@ RateLimiter::for('api-general', function () {
 // NOTE: Laravel 12 registers this file with the automatic `api` prefix
 // (bootstrap/app.php -> withRouting(api: ...)), so no /api prefix here.
 
+// ---- Public: Media serving (no symlink needed) ----
+Route::get('/media/{path}', function (string $path) {
+    $full = storage_path('app/public/' . $path);
+    if (!file_exists($full) || !is_file($full)) {
+        abort(404);
+    }
+    $mime = mime_content_type($full) ?: 'application/octet-stream';
+    return response()->stream(function () use ($full) {
+        readfile($full);
+    }, 200, [
+        'Content-Type' => $mime,
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
+})->where('path', '.*');
+
 // ---- Public: Auth ----
 Route::post('/auth/login', [AuthController::class, 'login'])
     ->middleware('throttle:login');
