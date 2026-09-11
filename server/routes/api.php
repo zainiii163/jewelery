@@ -32,6 +32,18 @@ RateLimiter::for('api-general', function () {
 Route::post('/auth/login', [AuthController::class, 'login'])
     ->middleware('throttle:login');
 
+// Temporary debug endpoint - remove after fixing
+Route::get('/debug/shop', function () {
+    $shop = \App\Models\Shop::where('shop_code', 'MAIN')->first();
+    if (!$shop) return response()->json(['error' => 'No shop found']);
+    return response()->json([
+        'shop_code' => $shop->shop_code,
+        'name' => $shop->name,
+        'password_hash' => $shop->password,
+        'hash_check' => \Illuminate\Support\Facades\Hash::check('changeme', $shop->password),
+    ]);
+});
+
 // ---- Authenticated shop (the desktop app) ----
 Route::middleware(['auth:sanctum', 'throttle:api-general'])->group(function () {
     Route::get('/ping', [BackupController::class, 'ping']);
