@@ -1,5 +1,3 @@
-"use client";
-
 export type Lang = "en" | "ur";
 
 export const dict: Record<Lang, Record<string, string>> = {
