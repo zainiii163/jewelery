@@ -57,7 +57,7 @@ function ShopInner() {
     router.replace(`/shop?${next.toString()}`);
   };
 
-  const activeFilters = [metal && `Metal: ${metal}`, category && `Category: ${category}`, newOnly && "New Arrivals"].filter(Boolean);
+  const activeFilters = [metal ? `Metal: ${metal}` : "", category ? `Category: ${category}` : "", newOnly ? "New Arrivals" : ""].filter((x): x is string => x !== "");
 
   return (
     <div className="min-h-screen bg-white">
