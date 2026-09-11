@@ -9,14 +9,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('product_categories', function (Blueprint $table) {
-            $table->foreignId('parent_id')->nullable()->after('shop_id')->constrained('product_categories')->nullOnDelete();
+            $table->unsignedBigInteger('parent_id')->nullable()->after('shop_id');
         });
     }
 
     public function down(): void
     {
         Schema::table('product_categories', function (Blueprint $table) {
-            $table->dropForeign(['parent_id']);
             $table->dropColumn('parent_id');
         });
     }
