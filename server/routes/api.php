@@ -5,6 +5,7 @@ use App\Http\Controllers\BackupController;
 use App\Http\Controllers\BusinessSyncController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\PosReportsController;
 use App\Http\Controllers\ReportsController;
@@ -32,18 +33,6 @@ RateLimiter::for('api-general', function () {
 Route::post('/auth/login', [AuthController::class, 'login'])
     ->middleware('throttle:login');
 
-// Temporary debug endpoint - remove after fixing
-Route::get('/debug/shop', function () {
-    $shop = \App\Models\Shop::where('shop_code', 'MAIN')->first();
-    if (!$shop) return response()->json(['error' => 'No shop found']);
-    return response()->json([
-        'shop_code' => $shop->shop_code,
-        'name' => $shop->name,
-        'password_hash' => $shop->password,
-        'hash_check' => \Illuminate\Support\Facades\Hash::check('changeme', $shop->password),
-    ]);
-});
-
 // ---- Authenticated shop (the desktop app) ----
 Route::middleware(['auth:sanctum', 'throttle:api-general'])->group(function () {
     Route::get('/ping', [BackupController::class, 'ping']);
@@ -64,6 +53,14 @@ Route::middleware(['auth:sanctum', 'throttle:api-general'])->group(function () {
     Route::patch('/shop/appointments/{id}', [ShopSyncController::class, 'updateAppointment']);
     Route::get('/shop/custom-requests', [ShopSyncController::class, 'customRequests']);
     Route::patch('/shop/custom-requests/{id}', [ShopSyncController::class, 'updateCustomRequest']);
+
+    // Customers (admin panel + desktop app)
+    Route::get('/shop/customers', [CustomerController::class, 'index']);
+    Route::post('/shop/customers', [CustomerController::class, 'store']);
+    Route::get('/shop/customers/{id}', [CustomerController::class, 'show']);
+    Route::get('/shop/customers/{id}/sales', [CustomerController::class, 'sales']);
+    Route::get('/shop/customers/{id}/payments', [CustomerController::class, 'payments']);
+    Route::get('/shop/customers/{id}/ledger', [CustomerController::class, 'ledger']);
 
     // Reports & analytics (admin panel + desktop app)
     Route::get('/shop/reports/summary', [ReportsController::class, 'summary']);
