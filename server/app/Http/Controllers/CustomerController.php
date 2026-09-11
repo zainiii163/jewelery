@@ -14,7 +14,7 @@ class CustomerController extends Controller
         $shop = $request->user();
         $query = Customer::where('shop_id', $shop->id);
 
-        if ($search = $request->input('search')) {
+        if ($search = $request->input('q') ?: $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('mobile', 'like', "%{$search}%")
@@ -27,8 +27,19 @@ class CustomerController extends Controller
         $perPage = min((int) $request->input('per_page', 50), 100);
         $customers = $query->orderByDesc('id')->paginate($perPage);
 
+        $items = array_map(function ($c) {
+            $data = $c->toArray();
+            $data['paid'] = $c->paid_amount;
+            $data['remaining'] = round($c->total_amount - $c->paid_amount, 2);
+            $data['sales_count'] = DB::table('sales')
+                ->where('shop_id', $c->shop_id)
+                ->where('customer_id', $c->customer_id)
+                ->count();
+            return $data;
+        }, $customers->items());
+
         return response()->json([
-            'data' => $customers->items(),
+            'data' => $items,
             'total' => $total,
         ]);
     }
@@ -62,14 +73,25 @@ class CustomerController extends Controller
             'notes' => $validated['notes'] ?? null,
         ]);
 
-        return response()->json(['ok' => true, 'customer' => $customer]);
+        return response()->json(['ok' => true, 'customer' => array_merge($customer->toArray(), [
+            'paid' => 0,
+            'remaining' => 0,
+            'sales_count' => 0,
+        ])]);
     }
 
     public function show(Request $request, int $id)
     {
         $shop = $request->user();
         $customer = Customer::where('shop_id', $shop->id)->findOrFail($id);
-        return response()->json($customer);
+        $data = $customer->toArray();
+        $data['paid'] = $customer->paid_amount;
+        $data['remaining'] = round($customer->total_amount - $customer->paid_amount, 2);
+        $data['sales_count'] = DB::table('sales')
+            ->where('shop_id', $shop->id)
+            ->where('customer_id', $customer->customer_id)
+            ->count();
+        return response()->json($data);
     }
 
     public function sales(Request $request, int $id)
