@@ -11,7 +11,7 @@ import type {
   WebsiteCustomRequest,
 } from "./types";
 
-export const API = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+export const API = (import.meta.env.VITE_API_URL || "https://jewelery-production-f514.up.railway.app").replace(/\/$/, "");
 
 const TOKEN_KEY = "jw_admin_token";
 

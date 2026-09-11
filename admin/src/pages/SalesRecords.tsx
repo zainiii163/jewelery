@@ -19,7 +19,7 @@ interface SaleRecord {
 
 interface Product { id: number; sku: string; name: string; sale_price: number; stock_qty: number; }
 
-const API = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+const API = (import.meta.env.VITE_API_URL || "https://jewelery-production-f514.up.railway.app").replace(/\/$/, "");
 
 const api = (path: string, init?: RequestInit) => {
   const token = localStorage.getItem("jw_admin_token");

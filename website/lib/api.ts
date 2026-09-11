@@ -6,7 +6,7 @@ import type {
   ProductMedia,
 } from "./types";
 
-const API = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+const API = (process.env.NEXT_PUBLIC_API_URL || "https://jewelery-production-f514.up.railway.app").replace(/\/$/, "");
 const SHOP_CODE = process.env.NEXT_PUBLIC_SHOP_CODE || "MAIN";
 
 /** The API serves media from its own /api/media — no symlink needed. */
