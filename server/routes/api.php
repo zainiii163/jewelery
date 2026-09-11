@@ -6,10 +6,16 @@ use App\Http\Controllers\BusinessSyncController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\GoldRateController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PosReportsController;
+use App\Http\Controllers\RepairController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ShopSyncController;
+use App\Http\Controllers\StaffController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
@@ -61,6 +67,36 @@ Route::middleware(['auth:sanctum', 'throttle:api-general'])->group(function () {
     Route::get('/shop/customers/{id}/sales', [CustomerController::class, 'sales']);
     Route::get('/shop/customers/{id}/payments', [CustomerController::class, 'payments']);
     Route::get('/shop/customers/{id}/ledger', [CustomerController::class, 'ledger']);
+
+    // Payments
+    Route::get('/shop/payments', [PaymentController::class, 'index']);
+    Route::post('/shop/payments', [PaymentController::class, 'store']);
+
+    // Expenses
+    Route::get('/shop/expenses', [ExpenseController::class, 'index']);
+    Route::post('/shop/expenses', [ExpenseController::class, 'store']);
+    Route::put('/shop/expenses/{id}', [ExpenseController::class, 'update']);
+    Route::delete('/shop/expenses/{id}', [ExpenseController::class, 'destroy']);
+
+    // Gold Rates
+    Route::get('/shop/gold-rates', [GoldRateController::class, 'index']);
+    Route::post('/shop/gold-rates', [GoldRateController::class, 'store']);
+
+    // Repairs
+    Route::get('/shop/repairs', [RepairController::class, 'index']);
+    Route::post('/shop/repairs', [RepairController::class, 'store']);
+    Route::patch('/shop/repairs/{id}', [RepairController::class, 'update']);
+    Route::delete('/shop/repairs/{id}', [RepairController::class, 'destroy']);
+
+    // Staff Users
+    Route::get('/shop/users', [StaffController::class, 'index']);
+    Route::post('/shop/users', [StaffController::class, 'store']);
+    Route::patch('/shop/users/{id}', [StaffController::class, 'update']);
+    Route::delete('/shop/users/{id}', [StaffController::class, 'destroy']);
+
+    // Settings
+    Route::get('/shop/settings', [SettingController::class, 'index']);
+    Route::post('/shop/settings', [SettingController::class, 'store']);
 
     // Reports & analytics (admin panel + desktop app)
     Route::get('/shop/reports/summary', [ReportsController::class, 'summary']);
