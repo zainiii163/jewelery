@@ -12,12 +12,20 @@ class CategoryController extends Controller
     {
         $shop = $request->user();
         $categories = ProductCategory::where('shop_id', $shop->id)
-            ->with(['parent', 'children' => fn ($q) => $q->orderBy('name')])
+            ->whereNull('parent_id')
+            ->with(['children' => function ($q) {
+                $q->orderBy('name');
+            }])
             ->withCount('products')
             ->orderBy('name')
             ->get();
 
-        return response()->json(['categories' => $categories]);
+        $all = ProductCategory::where('shop_id', $shop->id)
+            ->withCount('products')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json(['categories' => $categories, 'all' => $all]);
     }
 
     public function store(Request $request)
